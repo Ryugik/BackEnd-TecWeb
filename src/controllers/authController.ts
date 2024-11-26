@@ -1,6 +1,6 @@
 import { createHash, hash } from "crypto";
-import database from "nonhoundatabase";
 import Jwt from "jsonwebtoken";
+import database from "../index.js";
 
 
 export class AuthController {
@@ -12,12 +12,12 @@ static hashPassword(password: string): string{
 
 
 static generateAuthToken(username: string): string{
-    return Jwt.sign({user: username}, process.env.TOKEN_SECRET, {expiresIn: "300s"});
+    return Jwt.sign({user: username}, process.env.TOKEN_SECRET, {expiresIn: "1d"});
 }
 
 
-static async searchUsername(username: string) {
-    const found = await database.user.findUnique({where: { username: username}});
+static async searchUsername(username: string, omitPassword = true) {
+    const found = await database.user.findUnique({where: { username: username}, omit: {password: omitPassword}});
     return found;
 }
 
@@ -36,7 +36,7 @@ static async searchUsername(username: string) {
   async register(user: {username: string, password: string}) {
     const hashedPassword = AuthController.hashPassword(user.password);
     //Creazione nuovo utente
-    const newUser = await database.User.create({
+    const newUser = await database.user.create({
         data: {username: user.username, password: hashedPassword}})
     }
 
