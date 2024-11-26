@@ -10,6 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 model User {
   username  String @id
   password String
@@ -17,7 +18,6 @@ model User {
   vote Vote[]
   comment Comment[]
 }
-
 
 model Post {
   idPost Int @id @default(autoincrement())
