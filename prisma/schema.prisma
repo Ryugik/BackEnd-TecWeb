@@ -18,34 +18,45 @@ model User {
   posts Post[]   
   vote Vote[]
   comment Comment[]
+  commentVotes   CommentVote[]
 }
 
 model Post {
   idPost Int @id @default(autoincrement())
   title String
   description String
-  autorPostId User @relation(fields: [author], references: [username])
   author String
+  creatorPost User @relation(fields: [author], references: [username])
   votes Vote[]
   comments Comment[]
   createdAt DateTime @default(now())
 }
 
 model Vote {
-  like String
-  dislike String
-  voterId User @relation(fields: [voter], references: [username])
-  voter String
-  post Post @relation(fields: [votePostId], references: [idPost])
-  votePostId Int  
-  @@id([voter, votePostId])
+  type Int
+  voterUsername String
+  voter User @relation(fields: [voterUsername], references: [username])
+  votePostId Int 
+  postRel Post @relation(fields: [votePostId], references: [idPost]) 
+  @@id([voterUsername, votePostId])
 }
 
 model Comment {
   idComment Int @id @default(autoincrement())
   body String
-  autorCommentId User @relation(fields: [author], references: [username])
   author String
-  postedOn Post @relation(fields: [postedOnId], references: [idPost])
+  autorComment User @relation(fields: [author], references: [username])
   postedOnId Int
+  postedOn Post @relation(fields: [postedOnId], references: [idPost])
+  CommentVote CommentVote[]
+}
+
+model CommentVote {
+  id Int      @id @default(autoincrement())
+  type Int  
+  voterUsername String
+  commentId Int      
+  voter User @relation(fields: [voterUsername], references: [username])
+  comment Comment @relation(fields: [commentId], references: [idComment])
+  @@unique([voterUsername, commentId])  
 }
