@@ -1,6 +1,6 @@
 import { createHash, hash } from "crypto";
 import Jwt from "jsonwebtoken";
-import database from "../index.js";
+import database from "../database.js";
 
 
 export class AuthController {

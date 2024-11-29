@@ -2,8 +2,8 @@ import express from "express";
 import cors from "cors";
 import 'dotenv/config';
 import morgan from "morgan";
-import { PrismaClient } from "@prisma/client";
 import { Request, Response, NextFunction } from "express";
+
 
 const app = express();
 app.use(express.json());
@@ -18,7 +18,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     });
 });
 
-const prisma = new PrismaClient();
-export default prisma;
+
+
 
 app.listen(process.env.PORT);

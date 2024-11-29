@@ -8,10 +8,11 @@
     "dev": "nodemon dist\\index.js",
     "test": "npm run build & npm run dev"
   },
-  "author": "Gigik",
+  "author": "Luigi",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@prisma/adapter-pg": "^5.22.0",
     "@prisma/client": "^5.22.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
@@ -23,9 +24,11 @@
     "express": "^4.21.1",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
-    "nodemon": "^3.1.7"
+    "nodemon": "^3.1.7",
+    "pg": "^8.13.1"
   },
   "devDependencies": {
+    "@types/pg": "^8.11.10",
     "prisma": "^5.22.0",
     "typescript": "^5.7.2"
   }

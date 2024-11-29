@@ -3,7 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["omitApi"]
+  previewFeatures = ["omitApi","driverAdapters"]
 }
 
 datasource db {
@@ -37,7 +37,7 @@ model Vote {
   voterId User @relation(fields: [voter], references: [username])
   voter String
   post Post @relation(fields: [votePostId], references: [idPost])
-  votePostId Int 
+  votePostId Int  
   @@id([voter, votePostId])
 }
 
