@@ -1,19 +1,19 @@
-import { Post, User } from "@prisma/client";
+import {Post, User, Comment} from "@prisma/client";
 import database from "../database.js";
 
 type Vote = "Like" | "Dislike";
 
 export class VoteController{
 
-static async voteCreatorPosts(vote:{Vote: Vote, user: User, post: Post,}){
+static async voteCreatorPost(vote:{Vote: Vote, user: User, post: Post,}){
     // Mappa il tipo di voto a un valore numerico: 1 per "upvote", -1 per "downvote", 0 come default
     const voteValue = { Like: 1, Dislike: -1 }[vote.Vote] ?? 0;
 
     const newVote = await database.vote.upsert({
         where: {
-            voterForPostId: {
-                voter: vote.user.username,
-                postId: vote.post.idPost
+            voterUsername_votePostId: {
+                voterUsername: vote.user.username,
+                votePostId: vote.post.idPost
             },
         },
         create: {
@@ -29,6 +29,78 @@ static async voteCreatorPosts(vote:{Vote: Vote, user: User, post: Post,}){
             type: voteValue,
         },
     })
+}
+
+
+static async voteCreatorComment(vote:{Vote: Vote, user: User, comment: Comment}){
+
+    const voteValue = { Like: 1, Dislike: -1 }[vote.Vote] ?? 0;
+
+    const newVote = await database.voteComment.upsert({
+        where: {
+            voterComUsername_commentId:{
+                voterComUsername: vote.user.username,
+                commentId: vote.comment.idComment
+            }
+        },
+        create: {
+            type: voteValue,
+            voter: {
+                connect: { username: vote.user.username }
+            },
+            comment: {
+                connect: {idComment: vote.comment.idComment}
+            },
+        },
+        update: {
+            type: voteValue,
+        },
+    })
+}
+
+
+static async removeVoteFromPost(vote:{user: User, post: Post}){
+    const removedVote = await database.vote.delete({
+        where: {
+            voterUsername_votePostId: {
+                voterUsername: vote.user.username,
+                votePostId: vote.post.idPost
+            }
+        }
+    })
+}
+
+
+static async removeVoteFromComment(vote:{user: User, comment: Comment}){
+    const removeVoteComment = await database.voteComment.delete({
+        where: {
+            voterComUsername_commentId:{
+                voterComUsername: vote.user.username,
+                commentId: vote.comment.idComment
+            }
+        }
+    })
+
+}
+
+
+static async getVotes(postId: number){
+    const votes = await database.vote.findMany({
+        where: {
+            votePostId: postId
+        }
+    })
+    return votes;
+}
+
+
+static async getCommentVotes(commentId: number){
+    const votes = await database.voteComment.findMany({
+        where: {
+            commentId: commentId
+        }
+    })
+    return votes;
 }
 
 

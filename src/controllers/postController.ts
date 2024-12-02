@@ -1,14 +1,12 @@
-import { User } from "@prisma/client";
-import { Post } from "@prisma/client";
+import {User, Post} from "@prisma/client";
 import database from "../database.js";
 
 
 const maxLengthTitle = 300;
 const maxLengthDescription = 10000;
 
+
 export class PostController {
-
-
 //checks for misuse, if none returns true else an error array
 static checkForErrors(post: {title: string, description: string, author: User}): true| string[]{
     
@@ -28,7 +26,7 @@ static checkForErrors(post: {title: string, description: string, author: User}):
             error.push(`La descrizione non puo' superare i ${maxLengthDescription} caratteri!`);
         }
 
-        if(error.length = 0){
+        if(error.length === 0){
             return true;
         }
     }
@@ -53,25 +51,29 @@ static async postCreator(post: {title: string, description: string, author: User
 }
 
 
-//deteles post from database
+//deteles post with its comments and votes from database
 static async postDestroyer(id: number){
     const deletePost = database.post.delete({
         where:{
             idPost: id
         }
     })
+
+    const deleteComments = database.comment.deleteMany({
+        where:{
+            idComment: id,
+        }
+    })
+
+    const deleteVotes = database.vote.deleteMany({
+        where: {
+            votePostId: id
+        }
+    })
+
     const carry = await database.$transaction([deletePost]);
 }
 
-//deteles comment from database
-static async commentDestroyer(id: number){
-    const deleteComment = database.post.deleteMany({
-        where:{
-            idPost: id
-        }
-    })
-    const carry = await database.$transaction([deleteComment]);
-}
 
 //deteles post from database
 static async voteDestroyer(id: number){
@@ -85,11 +87,12 @@ static async voteDestroyer(id: number){
 
 
 //gets all posts at a set date
-static async getAllPosts(Date: Date | null = null, postAuthor = true, postVotes = true){
+static async getAllPosts(Date: Date | null = null, postAuthor = true, postVotes = true, postComments = true){
 
     var searchVariables = {
         author: postAuthor,
-        votes: postVotes
+        votes: postVotes,
+        comments: postComments
     };
 
     var post;
@@ -113,11 +116,12 @@ static async getAllPosts(Date: Date | null = null, postAuthor = true, postVotes 
 
 
 //gets all posts prior to a set date
-static async getPriorPosts(Date: Date | null = null, postAuthor = true, postVotes = true){
+static async getPriorPosts(Date: Date | null = null, postAuthor = true, postVotes = true, postComments = true){
 
     var searchVariables = {
         author: postAuthor,
-        votes: postVotes
+        votes: postVotes,
+        comments: postComments
     };
 
     var post;
@@ -140,11 +144,12 @@ static async getPriorPosts(Date: Date | null = null, postAuthor = true, postVote
 
 
 //gets all posts post to a set date kekw name
-static async getPostPosts(Date: Date | null = null, postAuthor = true, postVotes = true){
+static async getPostPosts(Date: Date | null = null, postAuthor = true, postVotes = true, postComments = true){
 
     var searchVariables = {
         author: postAuthor,
-        votes: postVotes
+        votes: postVotes,
+        comments: postComments
     };
 
     var post;
