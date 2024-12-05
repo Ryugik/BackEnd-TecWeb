@@ -48,7 +48,7 @@ static async voteCreatorComment(vote:{Vote: Vote, user: User, comment: Comment})
             voter: {
                 connect: { username: vote.user.username }
             },
-            comment: {
+            commentRel: {
                 connect: {idComment: vote.comment.idComment}
             },
         },

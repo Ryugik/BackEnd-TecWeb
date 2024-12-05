@@ -57,21 +57,21 @@ export class CommentController{
         })
     }
 
-
-    static async getComments(postId: number, commentAuthor = true, commentedOn = false) {
-    
-        var searchVariables = {
-            author: commentAuthor,
-            post: commentedOn
-        }
+    //get ya comments son + test con operatore ternario
+    static async getComments(postId: number, commentAuthor = true, commentedOn = false,) {
 
         const comments = await database.comment.findMany({
-            include: searchVariables,
+            include: { //true se commentauthor/commentedon true else undef
+                        //(metto undef perche' prisma ignora i valori undef. questo evita errori)
+                authorComment: commentAuthor ? true : undefined,
+                postedOn: commentedOn ? true : undefined,
+            },
             where: {
                 postedOnId: postId
             }
         })
-
+        
+        return comments;
     }
 
 

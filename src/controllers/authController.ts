@@ -11,7 +11,7 @@ static hashPassword(password: string): string{
 }
 
 
-static generateAuthToken(username: string): string{
+static authToken(username: string): string{
     return Jwt.sign({user: username}, process.env.TOKEN_SECRET, {expiresIn: "1d"});
 }
 
@@ -29,7 +29,7 @@ static async searchUsername(username: string, omitPassword = true) {
       throw new Error("username e/o password incorretti");
     }
     //tuttappost
-    return AuthController.generateAuthToken(data.username);
+    return AuthController.authToken(data.username);
   }
 
 

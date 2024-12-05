@@ -1,5 +1,7 @@
 import {User, Post} from "@prisma/client";
 import database from "../database.js";
+import { VoteController } from "./voteController.js";
+import { CommentController } from "./commentController.js";
 
 
 const maxLengthTitle = 300;
@@ -30,7 +32,7 @@ static checkForErrors(post: {title: string, description: string, author: User}):
             return true;
         }
     }
-    catch(error){
+     catch(error){
         error.push("I campi non sono stati compilati correttamente!");
         return error;
     }
@@ -72,17 +74,6 @@ static async postDestroyer(id: number){
     })
 
     const carry = await database.$transaction([deletePost]);
-}
-
-
-//deteles post from database
-static async voteDestroyer(id: number){
-    const deleteVote = database.post.deleteMany({
-        where:{
-            idPost: id
-        }
-    })
-    const carry = await database.$transaction([deleteVote]);
 }
 
 
@@ -186,33 +177,33 @@ static async getPostById(id: number){
 }
 
 static async voteCounter(post: Post){
-    //vote controller
-}
+
+    const votes = await VoteController.getVotes(post.idPost);
+        let counter = {
+            likes: 0,
+            dislikes: 0
+        }
+
+        for (let vote of votes){
+            if (vote.type === 1){
+                counter.likes = counter.likes + 1;
+            } else {
+                counter.dislikes = counter.dislikes +1;
+            }
+        }
+
+        return counter;
+    }
+
 
 
 static async commentCounter(post: Post){
-    //comment controller
+
+    const comments = await CommentController.getComments(post.idPost);
+
+    return comments.length;
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }
