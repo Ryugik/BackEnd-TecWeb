@@ -25,7 +25,7 @@ export function forcedAuth(req: Request, res: Response, next: NextFunction): nul
 }
 
 
-export async function enforceIdeaAuthorization(req: Request, res: Response, next: NextFunction) {
+export async function forcedPostAuth(req: Request, res: Response, next: NextFunction) {
 
     try {
         const postId = Number(req.params.id);

@@ -1,4 +1,4 @@
-import {Post, User, VoteComment} from "@prisma/client"
+import {Post, User} from "@prisma/client"
 import database from "../database.js"
 
 const maxCommentLength = 3333;
@@ -33,7 +33,7 @@ export class CommentController{
 
     //creates comment in the post
     static async commentCreator(comment: {body: string, author: User, postedOn: Post}){
-        const newComment = await database.comment.create({
+        await database.comment.create({
             data:{
                 body: comment.body, 
                 authorComment: {
@@ -50,7 +50,7 @@ export class CommentController{
 
     //deteles comment from database
     static async commentDestroyer(id: number){
-        const deleteComment = database.comment.delete({
+        await database.comment.delete({
             where:{
                 idComment: id
             }

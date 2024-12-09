@@ -1,8 +1,7 @@
-import express from "express";
 import cors from "cors";
 import 'dotenv/config';
 import morgan from "morgan";
-import { Request, Response, NextFunction } from "express";
+import express, { Request, Response, NextFunction } from "express";
 
 
 const app = express();

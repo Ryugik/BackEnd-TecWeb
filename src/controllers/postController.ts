@@ -41,7 +41,7 @@ static checkForErrors(post: {title: string, description: string, author: User}):
 
 //saves post into database
 static async postCreator(post: {title: string, description: string, author: User}){
-    const newPost = await database.post.create({
+    await database.post.create({
         data:{
             title: post.title, 
             description: post.description,
@@ -73,20 +73,20 @@ static async postDestroyer(id: number){
         }
     })
 
-    const carry = await database.$transaction([deletePost]);
+    await database.$transaction([deletePost, deleteComments, deleteVotes]);
 }
 
 
 //gets all posts at a set date
 static async getAllPosts(Date: Date | null = null, postAuthor = true, postVotes = true, postComments = true){
 
-    var searchVariables = {
+    let searchVariables = {
         author: postAuthor,
         votes: postVotes,
         comments: postComments
     };
 
-    var post;
+    let post;
     if (Date === null){
         post = await database.post.findMany({
             include: searchVariables
@@ -109,13 +109,13 @@ static async getAllPosts(Date: Date | null = null, postAuthor = true, postVotes 
 //gets all posts prior to a set date
 static async getPriorPosts(Date: Date | null = null, postAuthor = true, postVotes = true, postComments = true){
 
-    var searchVariables = {
+    let searchVariables = {
         author: postAuthor,
         votes: postVotes,
         comments: postComments
     };
 
-    var post;
+    let post;
     if (Date === null){
         post = await database.post.findMany({
             include: searchVariables
@@ -137,13 +137,13 @@ static async getPriorPosts(Date: Date | null = null, postAuthor = true, postVote
 //gets all posts post to a set date kekw name
 static async getPostPosts(Date: Date | null = null, postAuthor = true, postVotes = true, postComments = true){
 
-    var searchVariables = {
+    let searchVariables = {
         author: postAuthor,
         votes: postVotes,
         comments: postComments
     };
 
-    var post;
+    let post;
     if (Date === null){
         post = await database.post.findMany({
             include: searchVariables

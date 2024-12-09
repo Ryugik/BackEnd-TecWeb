@@ -9,7 +9,7 @@ static async voteCreatorPost(vote:{Vote: Vote, user: User, post: Post,}){
     // Mappa il tipo di voto a un valore numerico: 1 per "upvote", -1 per "downvote", 0 come default
     const voteValue = { Like: 1, Dislike: -1 }[vote.Vote] ?? 0;
 
-    const newVote = await database.vote.upsert({
+    await database.vote.upsert({
         where: {
             voterUsername_votePostId: {
                 voterUsername: vote.user.username,
@@ -36,7 +36,7 @@ static async voteCreatorComment(vote:{Vote: Vote, user: User, comment: Comment})
 
     const voteValue = { Like: 1, Dislike: -1 }[vote.Vote] ?? 0;
 
-    const newVote = await database.voteComment.upsert({
+    await database.voteComment.upsert({
         where: {
             voterComUsername_commentId:{
                 voterComUsername: vote.user.username,
@@ -60,7 +60,7 @@ static async voteCreatorComment(vote:{Vote: Vote, user: User, comment: Comment})
 
 
 static async removeVoteFromPost(vote:{user: User, post: Post}){
-    const removedVote = await database.vote.delete({
+    await database.vote.delete({
         where: {
             voterUsername_votePostId: {
                 voterUsername: vote.user.username,
@@ -72,7 +72,7 @@ static async removeVoteFromPost(vote:{user: User, post: Post}){
 
 
 static async removeVoteFromComment(vote:{user: User, comment: Comment}){
-    const removeVoteComment = await database.voteComment.delete({
+    await database.voteComment.delete({
         where: {
             voterComUsername_commentId:{
                 voterComUsername: vote.user.username,
