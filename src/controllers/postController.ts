@@ -4,8 +4,8 @@ import { VoteController } from "./voteController.js";
 import { CommentController } from "./commentController.js";
 
 
-const maxLengthTitle = 300;
-const maxLengthDescription = 10000;
+const maxLengthTitle = 400;
+const maxLengthDescription = 400;
 
 
 export class PostController {
@@ -81,7 +81,7 @@ static async postDestroyer(id: number){
 static async getAllPosts(Date: Date | null = null, postAuthor = true, postVotes = true, postComments = true){
 
     let searchVariables = {
-        author: postAuthor,
+        creatorPost: postAuthor,
         votes: postVotes,
         comments: postComments
     };
@@ -110,7 +110,7 @@ static async getAllPosts(Date: Date | null = null, postAuthor = true, postVotes 
 static async getPriorPosts(Date: Date | null = null, postAuthor = true, postVotes = true, postComments = true){
 
     let searchVariables = {
-        author: postAuthor,
+        creatorPost: postAuthor,
         votes: postVotes,
         comments: postComments
     };
@@ -138,7 +138,7 @@ static async getPriorPosts(Date: Date | null = null, postAuthor = true, postVote
 static async getPostPosts(Date: Date | null = null, postAuthor = true, postVotes = true, postComments = true){
 
     let searchVariables = {
-        author: postAuthor,
+        creatorPost: postAuthor,
         votes: postVotes,
         comments: postComments
     };

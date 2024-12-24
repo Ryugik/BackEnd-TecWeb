@@ -10,9 +10,11 @@ import { CommentController } from "../controllers/commentController.js";
 export const postRouter = express.Router();
 
 postRouter.get("/posts", async (req, res) => {
+    console.log("penesrnello");
     try { 
         //se maxage non e' nella query startingDate rimane rull, restituisce tutti i post
         let startingDate: Date | null = null;
+        let foundPosts: Post[] = [];
 
         if (req.query.maxAge !== undefined) {
 
@@ -23,10 +25,14 @@ postRouter.get("/posts", async (req, res) => {
             //una settimana, basta cambiare il 7 per avere giorni diversi!
             const offset = maxAge * (7 * 24 * 60 * 60 * 1000); 
             startingDate = new Date(Date.now() - offset);
-            await PostController.getPostPosts(startingDate);
+
+            foundPosts = await PostController.getPostPosts(startingDate);
+            
+            
         } else{
-            await PostController.getPriorPosts();
+            foundPosts = await PostController.getPriorPosts();
         }
+        res.status(200).json(foundPosts);
     } catch (error) {
         res.status(500).json({ message: "Richiesta non valida!"});
     }
@@ -37,7 +43,7 @@ postRouter.get("/posts", async (req, res) => {
 });
 
 
-postRouter.get("/posts", forcedAuth, async (req, res) => {
+postRouter.post("/posts", forcedAuth, async (req, res) => {
     let post = req.body
     const user = await AuthController.searchUsername(post.username)
 
