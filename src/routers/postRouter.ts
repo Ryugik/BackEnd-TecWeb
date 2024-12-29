@@ -1,5 +1,4 @@
 import express from "express";
-import { json } from "stream/consumers";
 import { forcedAuth, forcedPostAuth } from "../middleware.js";
 import { Post } from "@prisma/client";
 import { PostController } from "../controllers/postController.js";
@@ -10,7 +9,6 @@ import { CommentController } from "../controllers/commentController.js";
 export const postRouter = express.Router();
 
 postRouter.get("/posts", async (req, res) => {
-    console.log("penesrnello");
     try { 
         //se maxage non e' nella query startingDate rimane rull, restituisce tutti i post
         let startingDate: Date | null = null;
@@ -45,10 +43,12 @@ postRouter.get("/posts", async (req, res) => {
 
 postRouter.post("/posts", forcedAuth, async (req, res) => {
     let post = req.body
-    const user = await AuthController.searchUsername(post.username)
-
-    post.authorUsername = user;
     
+    const user = await AuthController.searchUsername(post.username, true);
+
+    post.author = user;
+    
+
     if(PostController.checkForErrors(post)){
         PostController.postCreator(post);
         res.status(200).json({message: "Post creato correttamente!"});
@@ -68,11 +68,11 @@ postRouter.get("/posts/:id", async (req, res) => {
         }
         if (foundPost === null) {
             res.status(404).json({ message: "Post non trovato!" });
-        }
-
+        } else{
         const count = await PostController.voteCounter(foundPost);
-        // spread (...) estrae tutte le proprieta' dai due oggetti e le unisce in uno singolo
-        res.status(200).json({ ...foundPost, ...count });
+            // spread (...) estrae tutte le proprieta' dai due oggetti e le unisce in uno singolo
+        res.status(200).json({ ...foundPost, count });
+        }
     } catch (error) {
         res.status(500).json({ message: "C'e' stato un errore, riprovare!"});
     }
@@ -84,3 +84,80 @@ postRouter.delete("/posts/:id", forcedAuth, forcedPostAuth, async (req, res) => 
     res.status(200).json({message: "Post eliminato correttamente!"});
 
 })
+
+
+postRouter.get("/posts/:id/comments", async (req, res) => {
+    const postId = Number(req.params.id);
+    const comments = await CommentController.getComments(postId);
+    res.status(200).json(comments);
+});
+
+
+postRouter.post("/posts/:id/comments", forcedAuth, async (req, res) => {
+    const postId = Number(req.params.id);
+    const comment = req.body;
+    const user = await AuthController.searchUsername(req.body.username);
+    comment.author = user;
+    comment.postedOn = await PostController.getPostById(postId);
+
+    if (CommentController.checkComment(comment)) {
+        await CommentController.commentCreator(comment);
+        res.status(200).json({ message: "Commento creato correttamente!" });
+    } else {
+        res.status(500).json({ message: "Richiesta non valida!" });
+    }
+});
+
+
+postRouter.delete("/posts/:id/comments/:commentId", forcedAuth, async (req, res) => {
+    const commentId = Number(req.params.commentId);
+    await CommentController.commentDestroyer(commentId);
+    res.status(200).json({ message: "Commento eliminato correttamente!" });
+});
+
+
+postRouter.post("/posts/:id/votes", forcedAuth, async (req, res) => {
+  const postId = Number(req.params.id);
+  const type = req.body.type;
+  const user = await AuthController.searchUsername(req.body.username);
+  const post = await PostController.getPostById(postId);
+
+  if (post === null) {
+    res.status(404).json({ message: "Post non trovato!" });
+    return;
+  }
+
+  if (type !== 1 && type !== -1) {
+    res.status(400).json({ message: "Richiesta non valida!" });
+    return;
+  }
+
+  await VoteController.votePostCreator({ type, user, post });
+  const count = await PostController.voteCounter(post);
+  res.status(200).json({ message: "Voto inserito correttamente!", counter: count });
+});
+
+
+postRouter.delete("/posts/:id/votes", forcedAuth, async (req, res) => {
+    const postId = Number(req.params.id);
+    const user = await AuthController.searchUsername(req.body.username);
+    const post = await PostController.getPostById(postId);
+  
+    if (post === null) {
+      res.status(404).json({ message: "Post non trovato!" });
+      return;
+    }
+  
+    await VoteController.removeVotePost({ user, post });
+    const count = await PostController.voteCounter(post);
+    res.status(200).json({ message: "Voto eliminato correttamente!", counter: count });
+  });
+
+
+postRouter.get("/posts/:id/votes", async (req, res) => {
+    const postId = Number(req.params.id);
+    const post = await PostController.getPostById(postId);
+    const votes = await VoteController.getVotes(postId);
+    const counter = await PostController.voteCounter(post)
+    res.status(200).json({ votes, counter });
+});

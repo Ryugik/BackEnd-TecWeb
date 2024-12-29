@@ -32,6 +32,7 @@ CREATE TABLE "Comment" (
     "body" TEXT NOT NULL,
     "author" TEXT NOT NULL,
     "postedOnId" INTEGER NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "Comment_author_fkey" FOREIGN KEY ("author") REFERENCES "User" ("username") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "Comment_postedOnId_fkey" FOREIGN KEY ("postedOnId") REFERENCES "Post" ("idPost") ON DELETE RESTRICT ON UPDATE CASCADE
 );

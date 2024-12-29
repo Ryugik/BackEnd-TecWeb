@@ -16,6 +16,11 @@ static authToken(username: string): string{
 }
 
 
+static verifyToken(token: string){
+  return Jwt.verify(token, process.env.TOKEN_SECRET);
+}
+
+
 static async searchUsername(username: string, omitPassword = true) {
     const found = await database.user.findUnique({
       where: { username: username
@@ -33,7 +38,7 @@ static  async login(data: {username: string, password: string}) {
     user = await AuthController.searchUsername(data.username, false);
 
     if (!user || user.password !== AuthController.hashPassword(data.password)) {
-      throw new Error("username e/o password incorretti");
+      throw new Error(" Username o password incorretti!");
     }
     //tuttappost
     return AuthController.authToken(data.username);
@@ -44,11 +49,11 @@ static  async register(user: {username: string, password: string}) {
   const search = await AuthController.searchUsername(user.username, true);
 
   if(!user.username || !user.password) {
-    throw new Error("Inserire nome utente e password");
+    throw new Error("Inserire username e password!");
   }
 
   if (search){
-    throw new Error("username gia' in uso, inserirne uno diverso!");
+    throw new Error(" Username gia' in uso.");
 }
 
     const hashedPassword = AuthController.hashPassword(user.password);

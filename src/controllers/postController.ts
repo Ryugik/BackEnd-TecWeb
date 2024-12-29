@@ -4,7 +4,7 @@ import { VoteController } from "./voteController.js";
 import { CommentController } from "./commentController.js";
 
 
-const maxLengthTitle = 400;
+const maxLengthTitle = 140;
 const maxLengthDescription = 400;
 
 
@@ -177,23 +177,14 @@ static async getPostById(id: number){
 }
 
 static async voteCounter(post: Post){
-
     const votes = await VoteController.getVotes(post.idPost);
-        let counter = {
-            likes: 0,
-            dislikes: 0
-        }
-
         for (let vote of votes){
-            if (vote.type === 1){
-                counter.likes = counter.likes + 1;
-            } else {
-                counter.dislikes = counter.dislikes +1;
+            if (vote.type !== 0){
+                post.counter += vote.type;
             }
         }
-
-        return counter;
-    }
+    return post.counter;
+}
 
 
 

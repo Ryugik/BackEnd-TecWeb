@@ -5,8 +5,8 @@
   "scripts": {
     "start": "node dist\\index.js",
     "build": "tsc",
-    "dev": "nodemon dist\\index.js",
-    "test": "npm run build & npm run dev"
+    "dev": "npm run build & npm start",
+    "test": "nodemon dist\\index.js"
   },
   "author": "Luigi",
   "license": "ISC",

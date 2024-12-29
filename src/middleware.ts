@@ -7,14 +7,14 @@ import { AuthController } from "./controllers/authController";
 export function forcedAuth(req: Request, res: Response, next: NextFunction): null {
     
     const headerAuth = req.headers['authorization'];
-    
+    let decodedToken;
     if(!headerAuth) {
         next ({status: 401, message: "Non autorizzato!"})
         return;
     }
 
     try {
-        var decodedToken = AuthController.authToken(headerAuth) as unknown as JwtPayload;
+        decodedToken = AuthController.verifyToken(headerAuth) as JwtPayload;
     } 
      catch {
         next ({status: 401, message: "Non autorizzato!"})

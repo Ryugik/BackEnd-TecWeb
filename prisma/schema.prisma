@@ -29,9 +29,9 @@ model Post {
   author String
   createdAt DateTime @default(now())
   creatorPost User @relation(fields: [author], references: [username])
+  counter Int @default(0)
   votes Vote[]
   comments Comment[]
-
 }
 
 
@@ -50,6 +50,7 @@ model Comment {
   body String
   author String
   postedOnId Int
+  createdAt DateTime @default(now())
   authorComment User @relation(fields: [author], references: [username])
   postedOn Post @relation(fields: [postedOnId], references: [idPost])
   voteComment VoteComment[]
